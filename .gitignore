@@ -1,6 +1,11 @@
 .vs
 .git
 
-/Migrations/
-/bin/
-/obj/
+/AdmStock/Migrations/
+/AdmStock/bin/
+/AdmStock/obj/
+
+*.dll
+*.pdb
+*.sentinel
+*.cache
