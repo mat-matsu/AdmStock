@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using AdmStock.Models;
+using System.Text.Json;
 
 namespace AdmStock.Controllers
 {
@@ -7,8 +8,20 @@ namespace AdmStock.Controllers
     {
         public IActionResult Index()
         {
+            AdmStockContext context = new ();
 
-            return View();
+            Proveedor prov = context.Proveedores.Find(1);
+
+            TempData["proveedor"] = JsonSerializer.Serialize(prov);
+
+            return RedirectToAction("showProv");
+        }
+
+        public IActionResult showProv()
+        {
+            Proveedor prov = JsonSerializer.Deserialize<Proveedor>((string)TempData["proveedor"]);
+
+            return View("Index", prov);
         }
     }
 }

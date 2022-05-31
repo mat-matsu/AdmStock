@@ -1,0 +1,6 @@
+.vs
+.git
+
+/Migrations/
+/bin/
+/obj/

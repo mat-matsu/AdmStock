@@ -13,6 +13,6 @@ namespace AdmStock.Models
         [Required]
         public string cliente_dir { get; set; }
         [Required]
-        public int cliente_tel { get; set; }
+        public string cliente_tel { get; set; }
     }
 }
