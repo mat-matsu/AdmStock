@@ -2,22 +2,20 @@
 using AdmStock.Models;
 using System.Text.Json;
 
+
 namespace AdmStock.Controllers
 {
-    public class ClientController : Controller
+    public class ProveedorController : Controller
     {
         public IActionResult Index()
         {
-            /*
-               AdmStockContext context = new ();
+            AdmStockContext context = new();
 
-               Proveedor prov = context.Proveedores.Find(1);
+            Proveedor prov = context.Proveedores.Find(1);
 
-               TempData["proveedor"] = JsonSerializer.Serialize(prov);
+            TempData["proveedor"] = JsonSerializer.Serialize(prov);
 
-               return RedirectToAction("showProv");
-            */
-            return View("Index");
+            return RedirectToAction("showProv");
         }
 
         public IActionResult showProv()
