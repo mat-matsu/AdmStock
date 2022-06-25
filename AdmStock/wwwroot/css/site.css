@@ -16,3 +16,16 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+table, th, td {
+    border: 1px solid black;
+}
+
+table {
+    width: 75%;
+    margin: auto;
+}
+
+th, td {
+    width: 25%;
+}

@@ -1,6 +1,33 @@
-﻿
-<li>
-     <a href="@Url.Action("Index", "Proveedor")" >
-          <span>Proovedor</span>
-     </a>
-</li>
+﻿@model List<Cliente>
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<h1>Clientes</h1>
+
+<!--TRANSFORMAR EN UN MENU DESPLEGABLE DESPUES-->
+<h2>Menu:</h2>
+<ul>  
+    <li>
+        <a href="@Url.Action("Listar", "Client")" >
+            <span>Mostrar listado de clientes</span>
+        </a>
+    </li>
+    <li>
+        <a href="@Url.Action("BuscarDNI", "Client")" >
+            <span>Buscar cliente por DNI</span>
+        </a>
+    </li>
+</ul>
+<!--
+<table>
+    <tr>
+        <th>Nombre</th>
+        <th>DNI</th>
+        <th>Direccion</th>
+        <th>Telefono</th>
+    </tr>
+    
+</table>
+-->

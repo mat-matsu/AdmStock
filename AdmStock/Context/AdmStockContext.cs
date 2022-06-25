@@ -5,18 +5,22 @@ using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
+using AdmStock.Models;
 
-namespace AdmStock.Models
+namespace AdmStock.Context
 {
     public class AdmStockContext : DbContext
     {
+        public AdmStockContext (DbContextOptions<AdmStockContext> options) : base(options)
+        {
+        }
         public virtual DbSet<Proveedor> Proveedores { get; set; }
         public virtual DbSet<Cliente> Clientes { get; set; }
         public virtual DbSet<Venta> Ventas { get; set; }
         public virtual DbSet<Articulo> Articulos { get; set; }
         public virtual DbSet<Lote> Lotes { get; set; }
         public virtual DbSet<Producto> Productos { get; set; }
-
+        /*
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
@@ -24,5 +28,6 @@ namespace AdmStock.Models
                 optionsBuilder.UseSqlServer("Data Source=DESKTOP-L7TE2QO\\SQLEXPRESS; Initial Catalog=AdmStock; Integrated Security=true;");
             }
         }
+        */
     }
 }
