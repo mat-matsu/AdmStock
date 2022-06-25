@@ -9,7 +9,7 @@ namespace AdmStock.Controllers
         public IActionResult Index()
         {
 
-
+            // TESTOSTO
             //Cliente cli = context.Clientes.Find(1);
             /*
              * AdmStockContext context = new ();
