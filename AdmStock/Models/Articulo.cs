@@ -7,6 +7,7 @@ namespace AdmStock.Models
         [Key]
         public int art_id { get; set; }
         [Required]
+        [Display(Name = "Tipo de Articulo")]
         public string tipo_prod { get; set; }
     }
 }

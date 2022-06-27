@@ -20,10 +20,67 @@ namespace AdmStock.Controllers
         }
 
         // GET: Lotes
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string sortOrder, int searchIntLote, string searchStrProv, string searchStrProd)
         {
-            var admStockContext = _context.Lotes.Include(l => l.Productos).Include(l => l.Proveedores);
+            ViewBag.Message = "Lista de lotes de productos.";
+            ViewBag.LoteSortParm = String.IsNullOrEmpty(sortOrder) ? "lote_desc" : "";
+            ViewBag.ProvSortParm = sortOrder == "prov_asc" ? "prov_desc" : "prov_asc";
+            ViewBag.ProdSortParm = sortOrder == "prod_asc" ? "prod_desc" : "prod_asc";
+
+            var admStockContext = _context.Lotes.Include(l => l.Productos).Include(l => l.Proveedores).Where(l => l.lote_cant > 0).OrderBy(l => l.lote_id);
+
+            if (searchIntLote > 0) {
+                admStockContext = (IOrderedQueryable<Lote>)admStockContext
+                    .Where(a =>
+                        a.lote_id == searchIntLote
+                        &&
+                        a.Proveedores.prov_nom.Contains(String.IsNullOrEmpty(searchStrProv) ? "" : searchStrProv)
+                        &&
+                        a.Productos.prod_nom.Contains(String.IsNullOrEmpty(searchStrProd) ? "" : searchStrProd)
+                    );
+            } else
+            {
+                admStockContext = (IOrderedQueryable<Lote>)admStockContext
+                    .Where(a =>
+                        a.Proveedores.prov_nom.Contains(String.IsNullOrEmpty(searchStrProv) ? "" : searchStrProv)
+                        &&
+                        a.Productos.prod_nom.Contains(String.IsNullOrEmpty(searchStrProd) ? "" : searchStrProd)
+                    );
+            }
+
+            switch (sortOrder)
+            {
+                case "lote_desc":
+                    admStockContext = admStockContext.OrderByDescending(a => a.lote_id);
+                    break;
+                case "prov_asc":
+                    admStockContext = admStockContext.OrderBy(a => a.Proveedores.prov_nom);
+                    break;
+                case "prov_desc":
+                    admStockContext = admStockContext.OrderByDescending(a => a.Proveedores.prov_nom);
+                    break;
+                case "prod_asc":
+                    admStockContext = admStockContext.OrderBy(a => a.Productos.prod_nom);
+                    break;
+                case "prod_desc":
+                    admStockContext = admStockContext.OrderByDescending(a => a.Productos.prod_nom);
+                    break;
+                default:
+                    //admStockContext = admStockContext.OrderBy(a => a.art_id);
+                    ViewBag.LoteSortParm = "lote_desc";
+                    ViewBag.ProvSortParm = "prov_desc";
+                    ViewBag.ProdSortParm = "prod_desc";
+                    break;
+            }
+
             return View(await admStockContext.ToListAsync());
+            /*ViewLoteProdProv myModel = new ViewLoteProdProv();
+            myModel.lotes = _context.Lotes;
+            myModel.productos = _context.Productos;
+            myModel.proveedores = _context.Proveedores;
+            
+            return View(myModel);
+            */
         }
 
         // GET: Lotes/Details/5
@@ -49,8 +106,8 @@ namespace AdmStock.Controllers
         // GET: Lotes/Create
         public IActionResult Create()
         {
-            ViewData["prod_id"] = new SelectList(_context.Productos, "prod_id", "prod_desc");
-            ViewData["prov_id"] = new SelectList(_context.Proveedores, "prov_id", "prov_cuil");
+            ViewData["prod_id"] = new SelectList(_context.Productos, "prod_id", "prod_nom");
+            ViewData["prov_id"] = new SelectList(_context.Proveedores, "prov_id", "prov_nom");
             return View();
         }
 
@@ -63,6 +120,9 @@ namespace AdmStock.Controllers
         {
             if (ModelState.IsValid)
             {
+                lote.Productos = await _context.Productos.FindAsync(lote.prod_id);
+                lote.Proveedores = await _context.Proveedores.FindAsync(lote.prov_id);
+
                 _context.Add(lote);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -85,8 +145,8 @@ namespace AdmStock.Controllers
             {
                 return NotFound();
             }
-            ViewData["prod_id"] = new SelectList(_context.Productos, "prod_id", "prod_desc", lote.prod_id);
-            ViewData["prov_id"] = new SelectList(_context.Proveedores, "prov_id", "prov_cuil", lote.prov_id);
+            ViewData["prod_id"] = new SelectList(_context.Productos, "prod_id", "prod_nom", lote.prod_id);
+            ViewData["prov_id"] = new SelectList(_context.Proveedores, "prov_id", "prov_nom", lote.prov_id);
             return View(lote);
         }
 
@@ -122,8 +182,8 @@ namespace AdmStock.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["prod_id"] = new SelectList(_context.Productos, "prod_id", "prod_desc", lote.prod_id);
-            ViewData["prov_id"] = new SelectList(_context.Proveedores, "prov_id", "prov_cuil", lote.prov_id);
+            ViewData["prod_id"] = new SelectList(_context.Productos, "prod_id", "prod_nom", lote.prod_id);
+            ViewData["prov_id"] = new SelectList(_context.Proveedores, "prov_id", "prov_nom", lote.prov_id);
             return View(lote);
         }
 

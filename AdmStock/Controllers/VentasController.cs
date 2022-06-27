@@ -20,9 +20,61 @@ namespace AdmStock.Controllers
         }
 
         // GET: Ventas
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string sortOrder, DateTime searchDate, string searchStrNom, string searchStrProd)
         {
-            var admStockContext = _context.Ventas.Include(v => v.Clientes).Include(v => v.Lote);
+            ViewBag.Message = "Lista de Ventas.";
+            ViewBag.FecSortParm = String.IsNullOrEmpty(sortOrder) ? "fec_asc" : "";
+            ViewBag.CliSortParm = sortOrder == "cli_asc" ? "cli_desc" : "cli_asc";
+            ViewBag.ProdSortParm = sortOrder == "prod_asc" ? "prod_desc" : "prod_asc";
+
+            var searchDateFormat = searchDate.ToShortDateString();
+
+            var admStockContext = _context.Ventas.Include(v => v.Clientes).Include(v => v.Lote).Include(v => v.Lote.Productos).OrderByDescending(v => v.venta_fecha);
+
+            if(!searchDateFormat.Equals("1/1/0001"))
+            {
+                admStockContext = (IOrderedQueryable<Venta>)admStockContext
+                    .Where(a =>
+                        (a.venta_fecha > searchDate && a.venta_fecha < searchDate.AddDays(1))
+                        &&
+                        a.Clientes.cliente_nom.Contains(String.IsNullOrEmpty(searchStrNom) ? "" : searchStrNom)
+                        &&
+                        a.Lote.Productos.prod_nom.Contains(String.IsNullOrEmpty(searchStrProd) ? "" : searchStrProd)
+                    );
+            } else
+            {
+                admStockContext = (IOrderedQueryable<Venta>)admStockContext
+                    .Where(a =>
+                        a.Clientes.cliente_nom.Contains(String.IsNullOrEmpty(searchStrNom) ? "" : searchStrNom)
+                        &&
+                        a.Lote.Productos.prod_nom.Contains(String.IsNullOrEmpty(searchStrProd) ? "" : searchStrProd)
+                    );
+            }
+
+            switch (sortOrder)
+            {
+                case "fec_asc":
+                    admStockContext = admStockContext.OrderBy(a => a.venta_fecha);
+                    break;
+                case "cli_asc":
+                    admStockContext = admStockContext.OrderBy(a => a.Clientes.cliente_nom);
+                    break;
+                case "cli_desc":
+                    admStockContext = admStockContext.OrderByDescending(a => a.Clientes.cliente_nom);
+                    break;
+                case "prod_asc":
+                    admStockContext = admStockContext.OrderBy(a => a.Lote.Productos.prod_nom);
+                    break;
+                case "prod_desc":
+                    admStockContext = admStockContext.OrderByDescending(a => a.Lote.Productos.prod_nom);
+                    break;
+                default:
+                    ViewBag.FecSortParm = "fec_asc";
+                    ViewBag.CliSortParm = "cli_desc";
+                    ViewBag.ProdSortParm = "prod_desc";
+                    break;
+            }
+
             return View(await admStockContext.ToListAsync());
         }
 
@@ -49,7 +101,7 @@ namespace AdmStock.Controllers
         // GET: Ventas/Create
         public IActionResult Create()
         {
-            ViewData["cliente_id"] = new SelectList(_context.Clientes, "cliente_id", "cliente_dir");
+            ViewData["cliente_id"] = new SelectList(_context.Clientes, "cliente_id", "cliente_nom");
             ViewData["lote_id"] = new SelectList(_context.Lotes, "lote_id", "lote_id");
             return View();
         }
@@ -63,11 +115,23 @@ namespace AdmStock.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(venta);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                venta.Lote = await _context.Lotes.FindAsync(venta.lote_id);
+                venta.Clientes = await _context.Clientes.FindAsync(venta.cliente_id);
+
+                if (venta.venta_cant <= venta.Lote.lote_cant)
+                {
+                    _context.Add(venta);
+                    await _context.SaveChangesAsync();
+
+                    venta.Lote.lote_cant = (venta.Lote.lote_cant - venta.venta_cant);
+                    _context.Lotes.Update(venta.Lote);
+                    await _context.SaveChangesAsync();
+
+                    return RedirectToAction(nameof(Index));
+                }
+                               
             }
-            ViewData["cliente_id"] = new SelectList(_context.Clientes, "cliente_id", "cliente_dir", venta.cliente_id);
+            ViewData["cliente_id"] = new SelectList(_context.Clientes, "cliente_id", "cliente_nom", venta.cliente_id);
             ViewData["lote_id"] = new SelectList(_context.Lotes, "lote_id", "lote_id", venta.lote_id);
             return View(venta);
         }
@@ -85,7 +149,7 @@ namespace AdmStock.Controllers
             {
                 return NotFound();
             }
-            ViewData["cliente_id"] = new SelectList(_context.Clientes, "cliente_id", "cliente_dir", venta.cliente_id);
+            ViewData["cliente_id"] = new SelectList(_context.Clientes, "cliente_id", "cliente_nom", venta.cliente_id);
             ViewData["lote_id"] = new SelectList(_context.Lotes, "lote_id", "lote_id", venta.lote_id);
             return View(venta);
         }
@@ -122,7 +186,7 @@ namespace AdmStock.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["cliente_id"] = new SelectList(_context.Clientes, "cliente_id", "cliente_dir", venta.cliente_id);
+            ViewData["cliente_id"] = new SelectList(_context.Clientes, "cliente_id", "cliente_nom", venta.cliente_id);
             ViewData["lote_id"] = new SelectList(_context.Lotes, "lote_id", "lote_id", venta.lote_id);
             return View(venta);
         }

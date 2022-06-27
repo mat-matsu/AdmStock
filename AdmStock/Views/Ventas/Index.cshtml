@@ -4,43 +4,65 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>@ViewBag.Message</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create">
+        <input type="button" value="Alta nueva Venta" class="btn btn-info" />
+    </a>
 </p>
-<table class="table">
+
+@using (Html.BeginForm())
+{
+    <ul id="searchForm">
+        <li>
+            <label class="form-label">Buscar por Fecha: </label>
+            @Html.TextBox("searchDate", null, new {@class="form-control", @type = "date"})
+        </li>
+        <li>
+            <label class="form-label">Buscar por Cliente: </label>
+            @Html.TextBox("searchStrNom", null, new {@class="form-control"})
+        </li>
+        <li>
+            <label class="form-label">Buscar por Producto: </label>
+            @Html.TextBox("searchStrProd", null, new {@class="form-control"})
+        </li>
+        <li><input type="submit" value="Search" class="btn btn-info" /> </li>
+    </ul>
+}
+
+<table class="table table-dark table-striped table-hover">
     <thead>
         <tr>
-            <th>
+            <th scope="col">
+                @Html.ActionLink("Fecha de Venta", "Index", new { sortOrder = @ViewBag.FecSortParm}, null)
+            </th>
+            <th scope="col">
+                @Html.ActionLink("Cliente", "Index", new { sortOrder = @ViewBag.CliSortParm}, null)
+            </th>
+            <th scope="col">
+                @Html.ActionLink("Producto", "Index", new { sortOrder = @ViewBag.ProdSortParm}, null)
+            </th>
+            <th scope="col">
                 @Html.DisplayNameFor(model => model.venta_cant)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.venta_fecha)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Clientes)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Lote)
-            </th>
-            <th></th>
+            <th scope="col">Opciones</th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+    @foreach (var item in Model) {
         <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.venta_cant)
-            </td>
             <td>
                 @Html.DisplayFor(modelItem => item.venta_fecha)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Clientes.cliente_dir)
+                @Html.DisplayFor(modelItem => item.Clientes.cliente_nom)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Lote.lote_id)
+                @Html.DisplayFor(modelItem => item.Lote.Productos.prod_nom)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.venta_cant)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.venta_id">Edit</a> |
@@ -48,6 +70,6 @@
                 <a asp-action="Delete" asp-route-id="@item.venta_id">Delete</a>
             </td>
         </tr>
-}
+    }
     </tbody>
 </table>

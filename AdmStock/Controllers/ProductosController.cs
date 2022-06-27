@@ -20,9 +20,58 @@ namespace AdmStock.Controllers
         }
 
         // GET: Productoes
+        /*
         public async Task<IActionResult> Index()
         {
+            ViewBag.Filters = _context.Articulos.ToList();
             var admStockContext = _context.Productos.Include(p => p.Articulos);
+            return View(await admStockContext.ToListAsync());
+        }
+        */
+        public async Task<IActionResult> Index(string sortOrder, string searchStrArt, string searchStrProd)
+        {
+            ViewBag.Message = "Listado de productos";
+            ViewBag.ArtSortParm = String.IsNullOrEmpty(sortOrder) ? "art_desc" : "";
+            ViewBag.ProdSortParm = sortOrder == "prod_asc" ? "prod_desc" : "prod_asc";
+
+            var admStockContext = _context.Productos.Include(p => p.Articulos).OrderBy(a => a.Articulos.tipo_prod);
+            /*
+            if (!String.IsNullOrEmpty(searchStrArt) || !String.IsNullOrEmpty(searchStrProd))
+            {
+                admStockContext = (IOrderedQueryable<Producto>) admStockContext
+                    .Where(a =>
+                        a.prod_nom.Contains(String.IsNullOrEmpty(searchStrProd) ? "" : searchStrProd)
+                        &&
+                        a.Articulos.tipo_prod.Contains(String.IsNullOrEmpty(searchStrArt) ? "" : searchStrArt)
+                    );
+            }
+            */
+
+            admStockContext = (IOrderedQueryable<Producto>)admStockContext
+                .Where(a =>
+                    a.prod_nom.Contains(String.IsNullOrEmpty(searchStrProd) ? "" : searchStrProd)
+                    &&
+                    a.Articulos.tipo_prod.Contains(String.IsNullOrEmpty(searchStrArt) ? "" : searchStrArt)
+                );
+
+            switch (sortOrder)
+            {
+                case "art_desc":
+                    admStockContext = admStockContext.OrderByDescending(a => a.Articulos.tipo_prod);
+                    break;
+                case "prod_asc":
+                    admStockContext = admStockContext.OrderBy(a => a.prod_nom);
+                    break;
+                case "prod_desc":
+                    admStockContext = admStockContext.OrderByDescending(a => a.prod_nom);
+                    break;
+                default:
+                    //admStockContext = admStockContext.OrderBy(a => a.art_id);
+                    ViewBag.ArtSortParm = "art_desc";
+                    ViewBag.ProdSortParm = "prod_desc";
+                    break;
+            }
+            
             return View(await admStockContext.ToListAsync());
         }
 
@@ -61,6 +110,8 @@ namespace AdmStock.Controllers
         {
             if (ModelState.IsValid)
             {
+                producto.Articulos = await _context.Articulos.FindAsync(producto.art_id);
+
                 _context.Add(producto);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));

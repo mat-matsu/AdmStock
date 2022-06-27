@@ -20,11 +20,28 @@ namespace AdmStock.Controllers
         }
 
         // GET: Articuloes
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string sortOrder, string searchStrArt)
         {
-              return _context.Articulos != null ? 
-                          View(await _context.Articulos.ToListAsync()) :
-                          Problem("Entity set 'AdmStockContext.Articulos'  is null.");
+            ViewBag.Message = "Lista de Articulos.";
+            ViewBag.ArtSortParm = String.IsNullOrEmpty(sortOrder) ? "art_desc" : "";
+
+            var admStockContext = _context.Articulos.OrderBy(a => a.art_id);
+
+            admStockContext = (IOrderedQueryable<Articulo>)admStockContext
+                    .Where(a => a.tipo_prod.Contains(String.IsNullOrEmpty(searchStrArt) ? "" : searchStrArt));
+
+            switch (sortOrder)
+            {
+                case "art_desc":
+                    admStockContext = admStockContext.OrderByDescending(a => a.art_id);
+                    break;
+                default:
+                    //admStockContext = admStockContext.OrderBy(a => a.art_id);
+                    ViewBag.ArtSortParm = "art_desc";
+                    break;
+            }
+
+            return View(await admStockContext.ToListAsync());
         }
 
         // GET: Articuloes/Details/5
