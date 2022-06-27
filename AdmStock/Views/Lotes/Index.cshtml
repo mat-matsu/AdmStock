@@ -4,32 +4,66 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>@ViewBag.Message</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create">Alta nuevo Lote</a>
 </p>
-<table class="table">
+
+@using (Html.BeginForm())
+{
+    <ul id="searchForm">
+        <li>
+            <label class="form-label">Buscar por Nro. Lote: </label>
+            @Html.TextBox("searchIntLote", null, new {@class="form-control", @type = "number"})
+        </li>
+        <li>
+            <label class="form-label">Buscar por Proveedor: </label>
+            @Html.TextBox("searchStrProv", null, new {@class="form-control"})
+        </li>
+        <li>
+            <label class="form-label">Buscar por Producto: </label>
+            @Html.TextBox("searchStrProd", null, new {@class="form-control"})
+        </li>
+        <li><input type="submit" value="Search" class="btn btn-info" /> </li>
+    </ul>
+}
+
+<table class="table table-dark table-striped table-hover">
     <thead>
         <tr>
-            <th>
+            <th scope="col">
+                @Html.ActionLink("Nro Lote", "Index", new { sortOrder = @ViewBag.LoteSortParm}, null)
+            </th>
+            <th scope="col">
+                @Html.ActionLink("Proveedor", "Index", new { sortOrder = @ViewBag.ProvSortParm}, null)
+            </th>
+            <th scope="col">
+                @Html.ActionLink("Producto", "Index", new { sortOrder = @ViewBag.ProdSortParm}, null)
+            </th>
+            <th scope="col">
                 @Html.DisplayNameFor(model => model.lote_cant)
             </th>
-            <th>
+            <th scope="col">
                 @Html.DisplayNameFor(model => model.lote_precio)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Productos)
+            <th scope="col">
+                Opciones
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Proveedores)
-            </th>
-            <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+    @foreach (var item in Model) {
         <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.lote_id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Proveedores.prov_nom)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Productos.prod_nom)
+            </td>
             <td>
                 @Html.DisplayFor(modelItem => item.lote_cant)
             </td>
@@ -37,17 +71,11 @@
                 @Html.DisplayFor(modelItem => item.lote_precio)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Productos.prod_desc)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Proveedores.prov_cuil)
-            </td>
-            <td>
                 <a asp-action="Edit" asp-route-id="@item.lote_id">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.lote_id">Details</a> |
                 <a asp-action="Delete" asp-route-id="@item.lote_id">Delete</a>
             </td>
         </tr>
-}
+    }
     </tbody>
 </table>

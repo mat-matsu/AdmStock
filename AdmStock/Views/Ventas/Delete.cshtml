@@ -27,13 +27,13 @@
             @Html.DisplayNameFor(model => model.Clientes)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Clientes.cliente_dir)
+            @Html.DisplayFor(model => model.Clientes.cliente_nom)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Lote)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Lote.lote_id)
+            @Html.DisplayFor(model => model.Lote.Productos.prod_nom)
         </dd>
     </dl>
     

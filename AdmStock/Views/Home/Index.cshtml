@@ -3,38 +3,40 @@
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <h1 class="display-4">Administrador de Stock</h1>
 </div>
-<ul>
-    <li>
-         <a href="@Url.Action("Index", "Clientes")" >
-              <span>Clientes</span>
-         </a>
-    </li>
-    <li>
-         <a href="@Url.Action("Index", "Proveedores")" >
-              <span>Proovedores</span>
-         </a>
-    </li>
-    <li>
-         <a href="@Url.Action("Index", "Productos")" >
-              <span>Productos</span>
-         </a>
-    </li>
-    <li>
-         <a href="@Url.Action("Index", "Articulos")" >
-              <span>Articulos</span>
-         </a>
-    </li>
-    <li>
-         <a href="@Url.Action("Index", "Ventas")" >
-              <span>Ventas</span>
-         </a>
-    </li>
-    <li>
-         <a href="@Url.Action("Index", "Lotes")" >
-              <span>Lotes</span>
-         </a>
-    </li>
-</ul>
+
+<div class="container">
+  <div class="row row-cols-2">
+    <div class="col">
+        <a href="@Url.Action("Index", "Clientes")">
+            <input type="button" value="Clientes" class="btn btn-secondary" />
+        </a>
+    </div>
+    <div class="col">
+        <a href="@Url.Action("Index", "Proveedores")">
+            <input type="button" value="Proveedores" class="btn btn-secondary" />
+        </a>
+    </div>
+    <div class="col">
+        <a href="@Url.Action("Index", "Productos")">
+            <input type="button" value="Productos" class="btn btn-secondary" />
+        </a>
+    </div>
+    <div class="col">
+        <a href="@Url.Action("Index", "Articulos")">
+            <input type="button" value="Articulos" class="btn btn-secondary" />
+        </a>
+    </div>
+    <div class="col">
+        <a href="@Url.Action("Index", "Ventas")">
+            <input type="button" value="Ventas" class="btn btn-secondary" />
+        </a>
+    </div>
+    <div class="col">
+        <a href="@Url.Action("Index", "Lotes")">
+            <input type="button" value="Lotes" class="btn btn-secondary" />
+        </a>
+    </div>
+  </div>
+</div>

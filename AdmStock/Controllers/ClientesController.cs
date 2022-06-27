@@ -20,11 +20,57 @@ namespace AdmStock.Controllers
         }
 
         // GET: Clientes
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string sortOrder, string searchStrNom, int searchIntDni, string searchStrDir, string searchStrTel)
         {
-              return _context.Clientes != null ? 
-                          View(await _context.Clientes.ToListAsync()) :
-                          Problem("Entity set 'AdmStockContext.Clientes'  is null.");
+            ViewBag.Message = "Lista de Clientes.";
+            ViewBag.NomSortParm = String.IsNullOrEmpty(sortOrder) ? "nom_desc" : "";
+            ViewBag.DniSortParm = sortOrder == "dni_asc" ? "dni_desc" : "dni_asc";
+
+            var admStockContext = _context.Clientes.OrderBy(c => c.cliente_nom);
+
+            if (searchIntDni > 0)
+            {
+                admStockContext = (IOrderedQueryable<Cliente>)admStockContext
+                    .Where(a =>
+                        a.cliente_dni == searchIntDni
+                        &&
+                        a.cliente_nom.Contains(String.IsNullOrEmpty(searchStrNom) ? "" : searchStrNom)
+                        &&
+                        a.cliente_dir.Contains(String.IsNullOrEmpty(searchStrDir) ? "" : searchStrDir)
+                        &&
+                        a.cliente_tel.Contains(String.IsNullOrEmpty(searchStrTel) ? "" : searchStrTel)
+                    );
+            }
+            else
+            {
+                admStockContext = (IOrderedQueryable<Cliente>)admStockContext
+                    .Where(a =>
+                        a.cliente_nom.Contains(String.IsNullOrEmpty(searchStrNom) ? "" : searchStrNom)
+                        &&
+                        a.cliente_dir.Contains(String.IsNullOrEmpty(searchStrDir) ? "" : searchStrDir)
+                        &&
+                        a.cliente_tel.Contains(String.IsNullOrEmpty(searchStrTel) ? "" : searchStrTel)
+                    );
+            }
+
+            switch (sortOrder)
+            {
+                case "nom_desc":
+                    admStockContext = admStockContext.OrderByDescending(a => a.cliente_nom);
+                    break;
+                case "dni_asc":
+                    admStockContext = admStockContext.OrderBy(a => a.cliente_dni);
+                    break;
+                case "dni_desc":
+                    admStockContext = admStockContext.OrderByDescending(a => a.cliente_dni);
+                    break;
+                default:
+                    ViewBag.NomSortParm = "nom_desc";
+                    ViewBag.DniSortParm = "dni_desc";
+                    break;
+            }
+
+            return View(await admStockContext.ToListAsync());
         }
 
         // GET: Clientes/Details/5

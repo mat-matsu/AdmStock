@@ -4,31 +4,57 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>@ViewBag.Message</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create">
+        <input type="button" value="Alta nuevo Cliente" class="btn btn-info" />
+    </a>
 </p>
-<table class="table">
+
+@using (Html.BeginForm())
+{
+    <ul id="searchForm">
+        <li>
+            <label class="form-label">Buscar por Nombre: </label>
+            @Html.TextBox("searchStrNom", null, new {@class="form-control"})
+        </li>
+        <li>
+            <label class="form-label">Buscar por DNI: </label>
+            @Html.TextBox("searchIntDni", null, new {@class="form-control", @type = "number"})
+        </li>
+        <li>
+            <label class="form-label">Buscar por Direccion: </label>
+            @Html.TextBox("searchStrDir", null, new {@class="form-control"})
+        </li>
+        <li>
+            <label class="form-label">Buscar por Telefono: </label>
+            @Html.TextBox("searchStrTel", null, new {@class="form-control"})
+        </li>
+        <li><input type="submit" value="Search" class="btn btn-info" /> </li>
+    </ul>
+}
+
+<table class="table table-dark table-striped table-hover">
     <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.cliente_nom)
+            <th scope="col">
+                @Html.ActionLink("Nombre", "Index", new { sortOrder = @ViewBag.NomSortParm}, null)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.cliente_dni)
+            <th scope="col">
+                @Html.ActionLink("DNI", "Index", new { sortOrder = @ViewBag.DniSortParm}, null)
             </th>
-            <th>
+            <th scope="col">
                 @Html.DisplayNameFor(model => model.cliente_dir)
             </th>
-            <th>
+            <th scope="col">
                 @Html.DisplayNameFor(model => model.cliente_tel)
             </th>
-            <th></th>
+            <th scope="col">Opciones</th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+    @foreach (var item in Model) {
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.cliente_nom)
@@ -48,6 +74,6 @@
                 <a asp-action="Delete" asp-route-id="@item.cliente_id">Delete</a>
             </td>
         </tr>
-}
+    }
     </tbody>
 </table>

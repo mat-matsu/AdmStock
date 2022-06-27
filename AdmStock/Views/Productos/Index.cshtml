@@ -4,29 +4,50 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>@ViewBag.Message</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create">
+        <input type="button" value="Alta nuevo Producto" class="btn btn-info" />
+    </a>
 </p>
-<table class="table">
+
+@using (Html.BeginForm())
+{
+    <ul id="searchForm">
+        <li>
+            <label class="form-label">Buscar por Articulo: </label>
+            @Html.TextBox("searchStrArt", null, new {@class="form-control"})
+        </li>
+        <li>
+            <label class="form-label">Buscar por Nombre: </label>
+            @Html.TextBox("searchStrProd", null, new {@class="form-control"})
+        </li>
+        <li><input type="submit" value="Search" class="btn btn-info" /></li>
+    </ul>
+}
+
+<table class="table table-dark table-striped table-hover">
     <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.prod_nom)
+            <th scope="col">
+                @Html.ActionLink("Tipo de Articulo", "Index", new { sortOrder = @ViewBag.ArtSortParm}, null)
             </th>
-            <th>
+            <th scope="col">
+                @Html.ActionLink("Nombre", "Index", new { sortOrder = @ViewBag.ProdSortParm}, null)
+            </th>
+            <th scope="col">
                 @Html.DisplayNameFor(model => model.prod_desc)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Articulos)
-            </th>
-            <th></th>
+            <th scope="col">Opciones</th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+    @foreach (var item in Model) {
         <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Articulos.tipo_prod)
+            </td>
             <td>
                 @Html.DisplayFor(modelItem => item.prod_nom)
             </td>
@@ -34,14 +55,11 @@
                 @Html.DisplayFor(modelItem => item.prod_desc)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Articulos.tipo_prod)
-            </td>
-            <td>
                 <a asp-action="Edit" asp-route-id="@item.prod_id">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.prod_id">Details</a> |
                 <a asp-action="Delete" asp-route-id="@item.prod_id">Delete</a>
             </td>
         </tr>
-}
+    }
     </tbody>
 </table>

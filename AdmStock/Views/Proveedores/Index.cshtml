@@ -4,31 +4,57 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>@ViewBag.Message</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create">
+        <input type="button" value="Alta nuevo Proveedor" class="btn btn-info" />
+    </a>
 </p>
-<table class="table">
+
+@using (Html.BeginForm())
+{
+    <ul id="searchForm">
+        <li>
+            <label class="form-label">Buscar por CUIL: </label>
+            @Html.TextBox("searchStrCuil", null, new {@class="form-control"})
+        </li>
+        <li>
+            <label class="form-label">Buscar por Nombre: </label>
+            @Html.TextBox("searchStrNom", null, new {@class="form-control"})
+        </li>
+        <li>
+            <label class="form-label">Buscar por Direccion: </label>
+            @Html.TextBox("searchStrDir", null, new {@class="form-control"})
+        </li>
+        <li>
+            <label class="form-label">Buscar por Telefono: </label>
+            @Html.TextBox("searchStrTel", null, new {@class="form-control"})
+        </li>
+        <li><input type="submit" value="Search" class="btn btn-info" /> </li>
+    </ul>
+}
+
+<table class="table table-dark table-striped table-hover">
     <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.prov_cuil)
+            <th scope="col">
+                @Html.ActionLink("CUIL", "Index", new { sortOrder = @ViewBag.CuilSortParm}, null)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.prov_nom)
+            <th scope="col">
+                @Html.ActionLink("Nombre", "Index", new { sortOrder = @ViewBag.NomSortParm}, null)
             </th>
-            <th>
+            <th scope="col">
                 @Html.DisplayNameFor(model => model.prov_dir)
             </th>
-            <th>
+            <th scope="col">
                 @Html.DisplayNameFor(model => model.prov_tel)
             </th>
-            <th></th>
+            <th scope="col">Opciones</th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+    @foreach (var item in Model) {
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.prov_cuil)
@@ -48,6 +74,6 @@
                 <a asp-action="Delete" asp-route-id="@item.prov_id">Delete</a>
             </td>
         </tr>
-}
+    }
     </tbody>
 </table>
