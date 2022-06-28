@@ -1,13 +1,15 @@
 ﻿@model IEnumerable<AdmStock.Models.Lote>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Lotes";
 }
 
 <h1>@ViewBag.Message</h1>
 
 <p>
-    <a asp-action="Create">Alta nuevo Lote</a>
+    <a asp-action="Create">
+        <input type="button" value="Nuevo lote" class="btn btn-info" />
+    </a>
 </p>
 
 @using (Html.BeginForm())
@@ -25,7 +27,7 @@
             <label class="form-label">Buscar por Producto: </label>
             @Html.TextBox("searchStrProd", null, new {@class="form-control"})
         </li>
-        <li><input type="submit" value="Search" class="btn btn-info" /> </li>
+        <li><input type="submit" value="Buscar" class="btn btn-info" /> </li>
     </ul>
 }
 
@@ -71,9 +73,9 @@
                 @Html.DisplayFor(modelItem => item.lote_precio)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.lote_id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.lote_id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.lote_id">Delete</a>
+                <a asp-action="Edit" asp-route-id="@item.lote_id">Editar</a> |
+                <a asp-action="Details" asp-route-id="@item.lote_id">Detalles</a> |
+                <a asp-action="Delete" asp-route-id="@item.lote_id">Eliminar</a>
             </td>
         </tr>
     }

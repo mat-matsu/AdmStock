@@ -1,14 +1,14 @@
 ﻿@model IEnumerable<AdmStock.Models.Proveedor>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Proveedores";
 }
 
 <h1>@ViewBag.Message</h1>
 
 <p>
     <a asp-action="Create">
-        <input type="button" value="Alta nuevo Proveedor" class="btn btn-info" />
+        <input type="button" value="Nuevo Proveedor" class="btn btn-info" />
     </a>
 </p>
 
@@ -31,7 +31,7 @@
             <label class="form-label">Buscar por Telefono: </label>
             @Html.TextBox("searchStrTel", null, new {@class="form-control"})
         </li>
-        <li><input type="submit" value="Search" class="btn btn-info" /> </li>
+        <li><input type="submit" value="Buscar" class="btn btn-info" /> </li>
     </ul>
 }
 
@@ -69,9 +69,9 @@
                 @Html.DisplayFor(modelItem => item.prov_tel)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.prov_id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.prov_id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.prov_id">Delete</a>
+                <a asp-action="Edit" asp-route-id="@item.prov_id">Editar</a> |
+                <a asp-action="Details" asp-route-id="@item.prov_id">Detalles</a> |
+                <a asp-action="Delete" asp-route-id="@item.prov_id">Eliminar</a>
             </td>
         </tr>
     }

@@ -75,3 +75,16 @@ a:hover {
 .btn-info {
     color: darkslategrey;
 }
+
+.flex-grow-1 {
+    justify-content: right;
+}
+
+select option {
+    color: black;
+}
+
+.form-group {
+    margin-top: 5px;
+    margin-bottom: 20px;
+}
