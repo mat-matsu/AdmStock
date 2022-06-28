@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using AdmStock.Context;
 using AdmStock.Models;
+using ClosedXML.Excel;
+using System.Data;
 
 namespace AdmStock.Controllers
 {
@@ -228,6 +230,75 @@ namespace AdmStock.Controllers
             
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+        }
+
+        // GET: Ventas/Report
+        public async Task<IActionResult> Report(string sortOrder, DateTime startDate, DateTime endDate)
+        {
+            ViewBag.Message = "Reporte de ventas";
+            ViewBag.FecSortParm = String.IsNullOrEmpty(sortOrder) ? "fec_asc" : "";
+            
+            var startDateFormat = startDate.ToShortDateString();
+            var endDateFormat = endDate.ToShortDateString();
+
+            var admStockContext = _context.Ventas.Include(v => v.Clientes).Include(v => v.Lote).Include(v => v.Lote.Productos).OrderByDescending(v => v.venta_fecha);
+
+            if (!startDateFormat.Equals("1/1/0001"))
+            {
+                admStockContext = (IOrderedQueryable<Venta>)admStockContext
+                    .Where(a => (a.venta_fecha > startDate && a.venta_fecha < endDate) );
+            }
+            
+            switch (sortOrder)
+            {
+                case "fec_asc":
+                    admStockContext = admStockContext.OrderBy(a => a.venta_fecha);
+                    break;
+                default:
+                    ViewBag.FecSortParm = "fec_asc";
+                    break;
+            }
+
+            return View(await admStockContext.ToListAsync());
+        }
+
+        // POST: Ventas/Report
+        [HttpPost]
+        public async Task<FileResult> Report(DateTime startDate, DateTime endDate)
+        {
+            DataTable dt = new DataTable("Grid");
+            dt.Columns.AddRange(new DataColumn[6] { new DataColumn("Fecha Venta"),
+                                                     new DataColumn("Nombre Cliente"),
+                                                     new DataColumn("Producto"),
+                                                     new DataColumn("Cantidad"),
+                                                     new DataColumn("Precio"),
+                                                     new DataColumn("Subtotal")});
+
+            var startDateFormat = startDate.ToShortDateString();
+            var endDateFormat = endDate.ToShortDateString();
+
+            var admStockContext = _context.Ventas.Include(v => v.Clientes).Include(v => v.Lote).Include(v => v.Lote.Productos).OrderBy(v => v.venta_fecha);
+
+            if (!startDateFormat.Equals("1/1/0001"))
+            {
+                admStockContext = (IOrderedQueryable<Venta>)admStockContext
+                    .Where(a => (a.venta_fecha > startDate && a.venta_fecha < endDate.AddDays(1)));
+            }
+
+            foreach (var venta in admStockContext)
+            {
+                dt.Rows.Add(venta.venta_fecha, venta.Clientes.cliente_nom, venta.Lote.Productos.prod_nom, venta.venta_cant, venta.Lote.lote_precio, (venta.venta_cant * venta.Lote.lote_precio));
+            }
+
+            using (XLWorkbook wb = new XLWorkbook()) //Install ClosedXml from Nuget for XLWorkbook  
+            {
+                wb.Worksheets.Add(dt);
+                using (MemoryStream stream = new MemoryStream()) //using System.IO;  
+                {
+                    wb.SaveAs(stream);
+                    return File(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Reporte - " + startDateFormat + " - " + endDateFormat + ".xlsx");
+                }
+            }
         }
 
         private bool VentaExists(int id)
